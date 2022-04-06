@@ -1,0 +1,21 @@
+{
+  "name": "bill-service-worker",
+  "version": "1.0.0",
+  "description": "For handling bill service worker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "kafka",
+    "service",
+    "worker"
+  ],
+  "author": "Akeem S",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3",
+    "kafkajs": "^1.16.0",
+    "npm-hook-receiver": "^1.0.0"
+  }
+}
