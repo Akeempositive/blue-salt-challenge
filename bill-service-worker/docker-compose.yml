@@ -1,0 +1,27 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: npm run start
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: banking_db
+      POSTGRES_USERNAME: banking_db_user
+      POSTGRES_PASSWORD: mypassword
+      KAFKA_TOPIC_PROCESSING: transaction_processing
+      KAFKA_TOPIC_SUCCESS: transaction_completed
+      KAFKA_BOOTSTRAP_SERVER: localhost:9092
+      FIRST_TIME: 1
+  postgres:
+    image: postgres:9.6.2-alpine
+    environment:
+      POSTGRES_USER: banking_db_user
+      POSTGRES_DB: banking_db
