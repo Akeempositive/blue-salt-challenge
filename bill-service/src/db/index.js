@@ -3,11 +3,11 @@ const { AssignerProtocol } = require('kafkajs')
 
 const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'banking_db',
-  password: 'mypassword',
-  port: 5432,
+  user: process.env.POSTGRES_USERNAME,
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_DB,
+  password: process.env.POSTGRES_PASSWORD,
+  port: process.env.POSTGRES_PORT,
 })
 
 const createTable = async (sql, columnDefinitions)=>{

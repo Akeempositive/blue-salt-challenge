@@ -1,3 +1,6 @@
+console.log(__dirname)
+require('dotenv').config({path : __dirname + '/../.env'})
+console.log(process.env.KAFKA_TOPIC_PROCESSING)
 const kafka = require('./kafka')
 const database = require('./db')
 const db_bootstrap = require('./db/bootstrap-db')
@@ -13,8 +16,6 @@ app.use(express.json())
 const port = 3001
 
 app.post('/transaction', (req, res) => {
-  console.log('Request-received')
-  console.log(req.body)
   var transaction = req.body
     transaction = save(transaction)
     console.log('Another')
@@ -22,13 +23,11 @@ app.post('/transaction', (req, res) => {
 })
 
 var save = async (transaction) =>{
-  var user;
-  try {
-    user = await database.getUsersByUserName(`${transaction.username}`);
-    console.log(user)
-  }catch(error){
-    console.log('Here s errror')
-  }
+  await database.getUsersByUserName(`${transaction.username}`)
+  .then(data => {
+    user = data[0]
+  }).error(error => console.log(error))
+  console.log(user)
   console.log(user + ' this is ')
   if(user == null){
     user = {accountNumber: '1234567890', amount:1000}
@@ -44,7 +43,7 @@ var save = async (transaction) =>{
   await database.executeQuerry('insert into transactions (transaction_id, transaction_type,initiating_account_number, amount, narration, status, created) values ($1, $2, $3, $4, $5, $6, $7)', 
   [transaction.transactionId, transaction.transactionType, user.accountNumber,transaction.amount, transaction.narration, transaction.status, new Date()])
   producer.send({
-    topic: 'transaction-processing',
+    topic: process.env.KAFKA_TOPIC_PROCESSING,
     messages : [{value: JSON.stringify(transaction), key: transaction.transactionId}]
   })
   return transaction;
@@ -54,13 +53,12 @@ app.listen(port, async () => {
   await consumer.connect()
   await producer.connect()
   await consumer.subscribe({
-    topic: 'transaction-completed',
+    topic: process.env.KAFKA_TOPIC_SUCCESS,
     fromBeginning: false
   })
   var i=0;
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      console.log('Transaction is ready for upate' + i++);
       var transaction = JSON.parse(message.value.toString())
       database.executeQuerry('update transactions set status = $1 where transaction_id = $2', ['success',transaction] )
       console.log('updated successfully');
