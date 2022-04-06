@@ -1,4 +1,5 @@
 
+require('dotenv').config({path : __dirname + '/../.env'})
 const express = require('express')
 const https = require('http');
 const app = express()
