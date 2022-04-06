@@ -1,6 +1,4 @@
-console.log(__dirname)
 require('dotenv').config({path : __dirname + '/../.env'})
-console.log(process.env.KAFKA_TOPIC_PROCESSING)
 const kafka = require('./kafka')
 const database = require('./db')
 const db_bootstrap = require('./db/bootstrap-db')

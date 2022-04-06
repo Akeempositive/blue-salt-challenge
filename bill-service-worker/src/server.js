@@ -1,3 +1,4 @@
+require('dotenv').config({path : __dirname + '/../.env'})
 const createHookReceiver = require('npm-hook-receiver')
 const kafka = require('./kafka')
 const express = require('express')
